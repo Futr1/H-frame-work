@@ -1,3 +1,14 @@
+<div align="center">
+
+# Cue RAG: Dynamic multi-output cue memory under H framework for Retrieval-augmented Generation
+
+[![lightning](https://img.shields.io/badge/-Lightning-792ee5?logo=pytorchlightning&logoColor=white)](https://pytorchlightning.ai/)
+[![transformers](https://img.shields.io/badge/Transformers-orange)](https://github.com/huggingface/transformers)
+
+</div>
+
+
+cue memory  This repository contains the source code for this paper
 该脚本使用 Fairseq 及其他工具完成机器翻译（MT）任务中的数据准备、模型训练和评估。要进入目录是/mnt/7t/fys/fu_dir/pytorch-CycleGAN-and-pix2pix-master/selfmemory/SelfMemory/fairseq-main/fairseq-main/examples/discriminative_reranking_nmt，以下是脚本的详细分步说明
 1.定义文件路径和变量
 SOURCE_FILE：源语言文本文件（source.txt）。
