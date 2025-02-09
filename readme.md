@@ -4,7 +4,7 @@
 
 [![lightning](https://img.shields.io/badge/-Lightning-792ee5?logo=pytorchlightning&logoColor=white)](https://pytorchlightning.ai/)
 [![transformers](https://img.shields.io/badge/Transformers-orange)](https://github.com/huggingface/transformers)
-
+ <a href="https://github.com/pytorch/fairseq/blob/main/LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
 </div>
 
 
