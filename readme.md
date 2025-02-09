@@ -7,6 +7,33 @@
  <a href="https://github.com/pytorch/fairseq/blob/main/LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
 </div>
 
+Nowadays, LLMs still face hallucinations problem. To this problem, Retrieval-augmented generation (RAG) transfers
+non-parametric knowledge to LLMs and has been proven to be an effective means to enhance the accuracy of model
+answers. Traditional RAG is effective to support LLMs to find the most relevant surface answer from the vector
+library, but often does not work well on deeper reasons related to the input. This paper defines the concept of 
+**cued memory**, which removes text with high confidence (even if it is highly relevant) after finding the answer related to the
+LLMs input. This helps the LLMs to explore the underlying relevant knowledge that match the input. In this paper,
+through the exploration of cued memory, we also propose a new **H-framework** RAG: obtain contextual relationships
+in the form of a global dependency encoder, use an information filter to delete the direct information that the model
+has already obtained and retain the underlying knowledge that has not been learned, and obtain out into cued memory.
+Then the cued memory is sent to the sequential dependency encoder, which can achieve dynamic truncation and
+dynamic output of multiple high-quality memories. To the end, by creating an infinite memory pool, all the enhanced
+text can be fed back to the memory pool, so as to improves the efficiency of memory pool. Our method out performs
+on the public dialogue dataset DailyDialog and the translation dataset JRC-Acquis as well as the locally built private
+question-answering dataset. In particular, in the dialogue task, our H framework achieved the best B-1/2 result, and
+LLMs with cue memory also achieved **SOTA results** in the noise test. The project code and data related to this article
+are publicly published at: https://github.com/Futr1/H-frame-work
+
+<div align=center>
+<img src=model.svg width=75% height=75% />
+</div>
+
+---
+
+## Setup
+Our code is mainly based on ⚡ [PyTorch Lightning]() and 🤗 [Transformers](https://github.com/huggingface/transformers). 
+
+
 
 cue memory  This repository contains the source code for this paper
 该脚本使用 Fairseq 及其他工具完成机器翻译（MT）任务中的数据准备、模型训练和评估。要进入目录是/mnt/7t/fys/fu_dir/pytorch-CycleGAN-and-pix2pix-master/selfmemory/SelfMemory/fairseq-main/fairseq-main/examples/discriminative_reranking_nmt，以下是脚本的详细分步说明
