@@ -52,23 +52,29 @@ bash env.sh
 ```
 
 ### cue memory
-This repository contains the source code for this paper
-本文的核心为cue memory，用于提取上下文中无直接关联但至关重要的信息，主要涉及到去除原本已经模型掌握的信息和保留间接相关的知识，本项目将对其实现步骤进行详细说明（以翻译任务举例）
-脚本使用 Fairseq 及其他工具完成机器翻译（MT）任务中的数据准备、模型训练和评估。要进入目录是/mnt/7t/fys/fu_dir/pytorch-CycleGAN-and-pix2pix-master/selfmemory/SelfMemory/fairseq-main/fairseq-main/examples/discriminative_reranking_nmt，以下是脚本的详细分步说明
+This repository contains the source code for this paper.The core of this paper is **cue memory**, which is used to extract information from the context that is not directly related but crucial. It primarily involves removing information already mastered by the model and retaining indirectly relevant knowledge. This project will provide a detailed explanation of its implementation steps, using a translation task as an example.
 
-#### 1.定义文件路径和变量
-SOURCE_FILE：源语言文本文件（source.txt）。
-TARGET_FILE：目标语言文本文件（test.txt）。
-HYPO_FILE：存储模型预测的假设文件（output.txt）。
-XLMR_DIR：包含 SentencePiece 模型和其他资源的目录路径。
-OUTPUT_DIR：保存处理后的输出文件和训练结果的目录。
-SPLIT：指定要处理的数据集分割（train、test、valid）。
-N：生成的 beam search 假设数量，也就是目标语言文本和预测假设文件对应的倍数，一定要一致。
-NUM_SHARDS：数据分片的数量，用于并行处理。
-METRIC：评估指标，默认设置为 "bleu"。
+The script uses Fairseq and other tools to complete data preparation, model training, and evaluation for machine translation (MT) tasks. To proceed, navigate to the directory /mnt/7t/fys/fu_dir/pytorch-CycleGAN-and-pix2pix-master/selfmemory/SelfMemory/fairseq-main/fairseq-main/examples/discriminative_reranking_nmt. Below is a detailed step-by-step explanation of the script:
 
-#### 2. 使用 prep_data.py 进行数据准备，数据会保存在/mnt/7t/fys/fu_dir/pytorch-CycleGAN-and-pix2pix-master/selfmemory/SelfMemory/fairseq-main/fairseq-main/examples/discriminative_reranking_nmt/out2中
-通过运行 scripts/prep_data.py 脚本来预处理每个分割的数据。该脚本接收源、目标和假设文件，并生成训练和评估所需的输入。
+
+#### 1.Initial Definition
+
+```
+**SOURCE_FILE**: Source language text file (`source.txt`)  
+**TARGET_FILE**: Target language text file (`test.txt`)  
+**HYPO_FILE**: File storing model-generated hypotheses (`output.txt`)  
+**XLMR_DIR**: Directory path containing the SentencePiece model and other resources  
+**OUTPUT_DIR**: Directory to save processed output files and training results  
+**SPLIT**: Specifies the dataset split to process (`train`, `test`, `valid`)  
+**N**: Number of beam search hypotheses to generate, which must match the multiple of the target language text and hypothesis files  
+**NUM_SHARDS**: Number of data shards for parallel processing  
+**METRIC**: Evaluation metric, default is set to `"bleu"`
+```
+
+#### 2. Data preparation
+The data will be saved in /mnt/7t/fys/fu_dir/pytorch-CycleGAN-and-pix2pix-master/selfmemory/SelfMemory/fairseq-main/fairseq-main/examples/discriminative_reranking_nmt/out2
+Preprocess the data for each split by running the scripts/prep_data.py script. This script receives the source, target, and hypothesis files and generates the inputs required for training and evaluation.
+```
 python scripts/prep_data.py \
     --input-source ${SOURCE_FILE} \
     --input-target ${TARGET_FILE} \
@@ -78,10 +84,12 @@ python scripts/prep_data.py \
     --beam $N \
     --sentencepiece-model ${XLMR_DIR}/sentencepiece.bpe.model \
     --num-shards ${NUM_SHARDS}
-该脚本分别针对每个数据分割（train、test、valid）运行。也就是运行了三次，out2/blue/splite{N}路径下的训练、验证和测试数据集
+```
+Run for each data split (train, test, valid) separately. That is, run three times, the training, validation and test data sets in the out2/blue/splite{N} path
 
-####3. Fairseq 数据预处理
-针对 src（源语言）和 tgt（目标语言）使用 fairseq-preprocess 命令预处理数据，以便进行训练：
+#### 3.  Data preprocessing
+Convert the data to Fairseq's binary format for fast loading, using the dict.txt file as a shared dictionary for both the source and target languages.
+```
 for suffix in src tgt ; do
     fairseq-preprocess --only-source \
         --trainpref ${OUTPUT_DIR}/$METRIC/split1/input_${suffix}/train.bpe \
@@ -89,11 +97,10 @@ for suffix in src tgt ; do
         --destdir ${OUTPUT_DIR}/$METRIC/split1/input_${suffix} \
         --workers 60 \
         --srcdict ${XLMR_DIR}/dict.txt
-done
-此步骤将数据转换为 Fairseq 的二进制格式，便于快速加载，同时使用 dict.txt 文件作为源和目标语言的共享字典。
+```
 
-####4. 为分片数据创建符号链接，也就是你的创建文件夹链接到程序的文件夹，就不用修改路径了
-对于其他分片（从 split2 开始），创建指向 split1 验证文件的符号链接以节省空间和时间：
+Create a symbolic link for the shard data, that is, link your creation folder to the program's folder, so you don't have to modify the path. For other shards (starting from split2), create a symbolic link pointing to the split1 verification file to save space and time:
+```
 for i in `seq 2 ${NUM_SHARDS}`; do
     for suffix in src tgt ; do
         fairseq-preprocess --only-source \
@@ -107,9 +114,12 @@ for i in `seq 2 ${NUM_SHARDS}`; do
 
     ln -s ${OUTPUT_DIR}/$METRIC/split1/$METRIC/valid* ${OUTPUT_DIR}/$METRIC/split${i}/$METRIC/.
 done
+```
 
-####5. 使用 Fairseq 训练模型
-fairseq-hydra-train 命令用于启动模型训练，并配置了多个 GPU 的分布式训练。
+#### 5. 使用 Fairseq 训练模型
+The fairseq-hydra-train command is used to start model training and configure distributed training on multiple GPUs
+This configuration points to the model data directory, pre-trained model files, and other distributed training options. The training data is saved in /mnt/7t/fys/fu_dir/pytorch-CycleGAN-and-pix2pix-master/selfmemory/SelfMemory/fairseq-main/fairseq-main/examples/discriminative_reranking_nmt/multirun/2024-11-10, 2024-11-10 is your running time, and it will be saved according to the date
+```
 fairseq-hydra-train -m \
     --config-dir config/ --config-name deen \
     task.data=${OUTPUT_DIR}/$METRIC/split1/ \
@@ -118,7 +128,8 @@ fairseq-hydra-train -m \
     common.user_dir=${FAIRSEQ_ROOT}/examples/discriminative_reranking_nmt \
     checkpoint.save_dir=${EXP_DIR} \
     distributed_training.distributed_world_size=4
-此配置指向模型数据目录、预训练模型文件以及其他分布式训练选项。训练数据保存在/mnt/7t/fys/fu_dir/pytorch-CycleGAN-and-pix2pix-master/selfmemory/SelfMemory/fairseq-main/fairseq-main/examples/discriminative_reranking_nmt/multirun/2024-11-10中，2024-11-10是你的运行时间，会根据日期进行保存
+```
+
 
 The data is putted in `data/`
 
