@@ -36,8 +36,8 @@ Our code is mainly based on ⚡ [PyTorch Lightning]() and 🤗 [Transformers](ht
 ## Quick links
 
 * [Environment](#Environment)
-* [Cue memory](#Cuememory)
-* [H framework](#H framework)
+* [Cue memory](#Cue-memory)
+* [H framework](#H-framework)
 * [Licence](#Licence)
 
 ### Environment
