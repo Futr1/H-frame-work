@@ -130,7 +130,17 @@ fairseq-hydra-train -m \
     distributed_training.distributed_world_size=4
 ```
 
+### H framework
 
+Process the data
+```
+python create_features_data.py
+python build_table.py
+```
+Train the model
+```
+python train_mslr.py
+```
 
 
 
