@@ -41,14 +41,17 @@ Our code is mainly based on ⚡ [PyTorch Lightning]() and 🤗 [Transformers](ht
 * [Licence](#Licence)
 
 ### Environment
+PyTorch version >= 1.10.0
+Python version >= 3.8
+For training new models, we did  training on 2*A100+2*A6000.
 
 ```bash
-conda create -n rgb python=3.10.0
-conda activate rgb
+conda create -n cue memory  python=3.10.0
+conda activate cue memory
 bash env.sh
 ```
 
-### Retrieval-Augmented Generation Benchmark
+### cue memory
 
 The data is putted in `data/`
 
