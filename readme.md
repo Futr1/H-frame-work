@@ -7,22 +7,7 @@
  <a href="https://github.com/pytorch/fairseq/blob/main/LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
 </div>
 
-Nowadays, LLMs still face hallucinations problem. To this problem, Retrieval-augmented generation (RAG) transfers
-non-parametric knowledge to LLMs and has been proven to be an effective means to enhance the accuracy of model
-answers. Traditional RAG is effective to support LLMs to find the most relevant surface answer from the vector
-library, but often does not work well on deeper reasons related to the input. This paper defines the concept of 
-**cued memory**, which removes text with high confidence (even if it is highly relevant) after finding the answer related to the
-LLMs input. This helps the LLMs to explore the underlying relevant knowledge that match the input. In this paper,
-through the exploration of cued memory, we also propose a new **H-framework** RAG: obtain contextual relationships
-in the form of a global dependency encoder, use an information filter to delete the direct information that the model
-has already obtained and retain the underlying knowledge that has not been learned, and obtain out into cued memory.
-Then the cued memory is sent to the sequential dependency encoder, which can achieve dynamic truncation and
-dynamic output of multiple high-quality memories. To the end, by creating an infinite memory pool, all the enhanced
-text can be fed back to the memory pool, so as to improves the efficiency of memory pool. Our method out performs
-on the public dialogue dataset DailyDialog and the translation dataset JRC-Acquis as well as the locally built private
-question-answering dataset. In particular, in the dialogue task, our H framework achieved the best B-1/2 result, and
-LLMs with cue memory also achieved **SOTA results** in the noise test. The project code and data related to this article
-are publicly published at: https://github.com/Futr1/H-frame-work
+How to find high-quality knowledge related to the input is crucial for retrieval-enhanced generation of RAG. The most relevant knowledge matched directly from the vector library is often the shallow knowledge that the model has already mastered. This paper introduces the concept of cue memory to help the model pay more attention to the underlying knowledge that matches the input. And through rigorous theoretical derivation, it is proved that cue memory is conducive to improving the answer accuracy of the model. At the same time, this paper proposes a new retrieval-enhanced generation framework-H framework. This framework incorporates the concept of cue memory, uses a global dependency encoder to obtain relevant contextual knowledge and feeds it into the information filter. The filter only retains the underlying knowledge that has not yet been learned to obtain cue memory. The cue memory is then output as a high-quality memory through a sequential decoder. Finally, an infinite memory pool is built, and all enhanced memories will be fed back to the pool. The quality of the memory pool continues to improve with continuous feedback. This paper has achieved good results on the public dialogue dataset DailyDialog, the translation dataset JRC-Acquis and private data. In particular, in the dialogue task, our H model achieved the best B-1/2 result, and the large model with cue memory also achieved SOTA results in the noise test. The relevant project code of this paper is publicly published at: https://github.com/Futr1/H-frame-work
 
 <div align=center>
 <img src=model.svg width=75% height=75% />
